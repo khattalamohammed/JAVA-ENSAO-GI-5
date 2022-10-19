@@ -5,8 +5,10 @@ import java.util.Map;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class Stock extends TreeSet<Product> {
+	private static final ProductComparator COMPARATOR = new ProductComparator();
 	
 	public Stock filter(Predicate<Product> predicate) {
 		throw new ToBeCompletedException("Return a Stock instance containing products " +
@@ -42,4 +44,9 @@ public class Stock extends TreeSet<Product> {
 				" that are more expensive that a given product");
 	}
 	
+	public Collection<Product> sorted() {
+		return stream()
+				.sorted(COMPARATOR)
+				.collect(Collectors.toList());
+	}
 }
