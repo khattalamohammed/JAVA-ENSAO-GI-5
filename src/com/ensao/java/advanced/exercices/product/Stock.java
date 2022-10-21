@@ -1,7 +1,11 @@
 package com.ensao.java.advanced.exercices.product;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -9,44 +13,72 @@ import java.util.stream.Collectors;
 
 public class Stock extends TreeSet<Product> {
 	private static final ProductComparator COMPARATOR = new ProductComparator();
-	
+
 	public Stock filter(Predicate<Product> predicate) {
-		throw new ToBeCompletedException("Return a Stock instance containing products " +
-				"to which is applied the predicate");
+		Stock stock = new Stock();
+		Stock productsPredicated = (Stock) stock.stream().filter(predicate).collect(Collectors.toSet());
+		return productsPredicated;
 	}
-	
+
 	public void discount(Discount discount) {
-		
-		throw new ToBeCompletedException("apply a discount function " +
-				" do not apply discount if discount amount is > 1 or < 0");
+		discount = (product, discountAmount) -> {
+			if (discountAmount > 1 || discountAmount < 0)
+				return product;
+			product.setPrice(product.getPrice() - discountAmount);
+			return product;
+		};
 	}
-	
+
 	public <R> Collection<R> map(Function<Product, R> mapper) {
-		throw new ToBeCompletedException("Retrun a collection of mapped property " +
-				"of type 'R' of a product");
+		Stock products = new Stock();
+		Collection<R> collection =  products.stream().map(mapper).collect(Collectors.toList());
+		return collection;
 	}
-	
+
 	public void print(ProductPrinter printer) {
-		throw new ToBeCompletedException("using the 'printer', print the products in this stock");
+		Stock products = new Stock();
+		Iterator<Product> iterator = products.iterator();
+		while (iterator.hasNext()) {
+			printer.print(iterator.next());
+		}
 	}
-	
-	public Map<String, Product> groupByCategory() {
-		throw new ToBeCompletedException("Retrun a map of a stock of products grouped by the category");
-		
+
+	public Map<String, Stock> groupByCategory() {
+		Set<String> categorySet = new HashSet<String>();
+		Map<String, Stock> stockMap = new HashMap<String, Stock>();
+		Stock products = new Stock();
+		Iterator<Product> iterator = products.iterator();
+		while (iterator.hasNext()) {
+			Product product = iterator.next();
+			String category = product.getCategory();
+			if (!categorySet.contains(category)) {
+				Stock mainStock = (Stock) products.stream().filter(p -> p.getCategory() == category).collect(Collectors.toSet());
+				stockMap.put(category, mainStock);
+				categorySet.add(category);
+			}
+		}
+		return stockMap;
 	}
-	
+
 	public Object findProduct(String name) {
-		throw new ToBeCompletedException("Look for a product having the name 'name' if found");
+		Stock products = new Stock();
+		Iterator<Product> iterator = products.iterator();
+		while (iterator.hasNext()) {
+			Product product = iterator.next();
+			if (name.equals(product.getName())) {
+				return product;
+			}
+		}
+		return null;
 	}
-	
+
 	public Stock moreExpensiveThan(Product product) {
-		throw new ToBeCompletedException("return a new Stock of products" +
-				" that are more expensive that a given product");
+		Stock products = new Stock();
+		Stock moreExpensiveProducts = (Stock) products.stream().filter(p -> p.getPrice() > product.getPrice()).collect(Collectors.toSet());
+		return moreExpensiveProducts;
 	}
-	
+
 	public Collection<Product> sorted() {
-		return stream()
-				.sorted(COMPARATOR)
-				.collect(Collectors.toList());
+		return stream().sorted(COMPARATOR).collect(Collectors.toList());
 	}
 }

@@ -13,7 +13,7 @@ public class Main {
 		
 		Stock stock = new Stock();
 		stock.add(computer);
-		Map<String, Product> groupedByCategory = stock.groupByCategory();
+		Map<String, Stock> groupedByCategory = stock.groupByCategory();
 		Collection<String> productsNamesOnly = stock.map(product -> product.getName());
 		Object foundProduct = stock.findProduct("Computer");
 		Discount discount = null; // to complete
